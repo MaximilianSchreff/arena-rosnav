@@ -2,8 +2,6 @@
 import numpy as np
 from typing import Tuple, Optional
 
-from pysocialforce.potentials import PedPedPotential, PedSpacePotential
-from pysocialforce.fieldofview import FieldOfView
 from pysocialforce.utils import Config, stateutils, logger
 
 

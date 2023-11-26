@@ -7,6 +7,7 @@ See Helbing and Molnár 1998 and Moussaïd et al. 2010
 from pysocialforce.utils import DefaultConfig
 from pysocialforce.scene import PedState, EnvState
 from pysocialforce import forces
+from pysocialforce import headed_sfm as hsfm
 
 
 class Simulator:
@@ -78,6 +79,19 @@ class Simulator:
     def compute_forces(self):
         """compute forces"""
         return sum(map(lambda x: x.get_force(), self.forces))
+    
+    def compute_filtered_forces(self, old_force, factor_orth, torq_lambda, torq_alpha, inertia):
+        """Computes the forces of the headed SFM (HSFM) which 
+        is a filter of the common SFM"""
+        desired_force = self.forces[0].get_force()
+        social_force = self.forces[1].get_force()
+        obstacle_force = self.forces[2].get_force()
+        group_force = None
+        vel = self.peds.vel()
+        force = hsfm.filter_forces(vel, old_force, desired_force, obstacle_force, social_force, group_force, 
+                                   factor_orth, torq_lambda, torq_alpha, inertia)
+        
+        return force
 
     def get_states(self):
         """Expose whole state"""

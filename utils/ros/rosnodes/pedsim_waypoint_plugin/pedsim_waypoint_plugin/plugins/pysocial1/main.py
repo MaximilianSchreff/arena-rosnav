@@ -3,7 +3,7 @@ import pedsim_msgs.msg
 
 import numpy as np
 from pathlib import Path
-from typing import Dict, List, Optional, Type, TypeVar
+from typing import Dict, List, Optional, Type, TypeVar, Tuple
 import random
 import rospy
 
@@ -67,7 +67,7 @@ class Plugin_PySocialForce(WaypointPlugin):
     @staticmethod
     def get_state_data(agents: List[pedsim_msgs.msg.AgentState], 
                        groups: List[pedsim_msgs.msg.AgentGroup]
-                       ) -> np.ndarray:
+                       ) -> Tuple[np.ndarray, np.ndarray]:
         
         idx_assignment = dict()
         state_data = list()
@@ -122,12 +122,17 @@ class Plugin_PySocialForce(WaypointPlugin):
             return list()
         
         state, agent_idx = self.get_state_data(data.agents, data.groups)
-        groups = self.assign_groups(agent_idx, data.groups)
-        state = self.overwrite_group_dest(state, groups)
+        groups = []
+        # state = self.overwrite_group_dest(state, groups)
         obs = self.extract_obstacles(data.line_obstacles)
-
-        rospy.logdebug("Assigned Groups: " + groups.__str__())
-
+        old_force = np.array([[f.desired_force.x + f.obstacle_force.x + f.social_force.x, 
+                               f.desired_force.y + f.obstacle_force.y + f.social_force.y] 
+                              for f in map(lambda a: a.AgentForce, data.agents)])
+        factor_orth = 1
+        torq_alpha = 7
+        torq_lambda = 0.5
+        inertia = 4
+        
         simulator = psf.Simulator(
             state=state,
             groups=groups,
@@ -135,6 +140,29 @@ class Plugin_PySocialForce(WaypointPlugin):
             config_file=Path(__file__).resolve().parent.joinpath("pysocialforce/config/default.toml")
         )
 
-        forces = self.FACTOR * simulator.compute_forces()
+        forces = self.FACTOR * self.compute_filtered_forces(old_force, factor_orth, torq_lambda, torq_alpha, inertia)
 
         return self.map_force_to_feedback(data.agents, forces)
+
+
+    # def callback(self, data: InputData) -> OutputData:
+    #     if len(data.agents) < 1:
+    #         return list()
+        
+    #     state, agent_idx = self.get_state_data(data.agents, data.groups)
+    #     groups = self.assign_groups(agent_idx, data.groups)
+    #     state = self.overwrite_group_dest(state, groups)
+    #     obs = self.extract_obstacles(data.line_obstacles)
+
+    #     rospy.logdebug("Assigned Groups: " + groups.__str__())
+
+    #     simulator = psf.Simulator(
+    #         state=state,
+    #         groups=groups,
+    #         obstacles=obs,
+    #         config_file=Path(__file__).resolve().parent.joinpath("pysocialforce/config/default.toml")
+    #     )
+
+    #     forces = self.FACTOR * simulator.compute_forces()
+
+    #     return self.map_force_to_feedback(data.agents, forces)
