@@ -150,10 +150,6 @@ def filter_forces(velocities: np.ndarray,
     # tensor of rotation matrices for each walking direction
     rotation = rotation_matrix(heads) 
     
-    print(heads[0])
-    print(rotation[0, :, 0])
-    print(angular_vel[0])
-    
     # project overall force along walking direction of ped
     force_forw = np.sum((obs_force + desired_force) * rotation[:, :, 0], axis=1, keepdims=True)
     # project obstacle and ped force along orthogonal walking direction
@@ -168,9 +164,6 @@ def filter_forces(velocities: np.ndarray,
     
     # translate body frame force to global reference frame
     force = rotate_2d_vectors(np.hstack([force_forw, force_orth]), heads, rotation)
-    print("Force BF", np.hstack([force_forw, force_orth])[0])
-    print("Froce GF", force[0])
     # apply angular force to overall force
     force = rotate_2d_vectors(force, angular_force)
-    print("Torque", angular_force[0])
     return force
