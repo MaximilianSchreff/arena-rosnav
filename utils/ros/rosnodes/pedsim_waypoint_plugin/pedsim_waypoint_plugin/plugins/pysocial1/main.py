@@ -127,11 +127,11 @@ class Plugin_PySocialForce(WaypointPlugin):
         obs = self.extract_obstacles(data.line_obstacles)
         old_force = np.array([[f.desired_force.x + f.obstacle_force.x + f.social_force.x, 
                                f.desired_force.y + f.obstacle_force.y + f.social_force.y] 
-                              for f in map(lambda a: a.AgentForce, data.agents)])
-        factor_orth = 1
-        torq_alpha = 7
-        torq_lambda = 0.5
-        inertia = 4
+                              for f in map(lambda a: a.forces, data.agents)])
+        factor_orth = 3
+        torq_alpha = 4
+        torq_lambda = 0.3
+        inertia = 0.5
         
         simulator = psf.Simulator(
             state=state,
@@ -140,7 +140,7 @@ class Plugin_PySocialForce(WaypointPlugin):
             config_file=Path(__file__).resolve().parent.joinpath("pysocialforce/config/default.toml")
         )
 
-        forces = self.FACTOR * self.compute_filtered_forces(old_force, factor_orth, torq_lambda, torq_alpha, inertia)
+        forces = self.FACTOR * simulator.compute_filtered_forces(old_force, factor_orth, torq_lambda, torq_alpha, inertia)
 
         return self.map_force_to_feedback(data.agents, forces)
 

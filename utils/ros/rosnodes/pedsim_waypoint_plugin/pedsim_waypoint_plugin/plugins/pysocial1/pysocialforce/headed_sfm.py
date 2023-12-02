@@ -159,6 +159,8 @@ def filter_forces(velocities: np.ndarray,
     factor_head = -inertia * torq_lambda * force_magnitude  # shape n x 1
     factor_torq = -inertia * (1 + torq_alpha) * np.sqrt((torq_lambda / torq_alpha) * force_magnitude)  # shape n x 1
     angular_force = factor_head * (heads - force_phase) + factor_torq * angular_vel
+    print(angular_vel)
+    print(angular_force)
     
     # translate body frame force to global reference frame
     force = rotate_2d_vectors(np.hstack([force_forw, force_orth]), heads, rotation)
