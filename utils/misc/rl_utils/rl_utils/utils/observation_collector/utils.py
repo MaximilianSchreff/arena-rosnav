@@ -5,6 +5,9 @@ import numpy as np
 from geometry_msgs.msg import Pose2D
 from tf.transformations import euler_from_quaternion
 
+from task_generator.utils import Utils
+from task_generator.constants import Constants
+
 DistanceToGoal = float
 AngleToGoal = float
 
@@ -75,3 +78,6 @@ class PointCloudTransformer:
             else self.pc2_pointcloud_to_laserscan
         )
         return method(pointcloud, buffer)
+
+def sim_is_unity():
+    return Utils.get_simulator() == Constants.Simulator.UNITY
