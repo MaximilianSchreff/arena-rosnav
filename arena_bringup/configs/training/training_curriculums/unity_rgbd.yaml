@@ -1,0 +1,63 @@
+# Training Curriculum
+# this yaml serves as container of the learning curriculum for the agent
+# by determining the number of static/dynamic obstacles per stage
+# (will carry on training on last stage when threshhold reached)
+
+# Training Curriculum
+# this yaml serves as container of the learning curriculum for the agent
+# by determining the number of static/dynamic obstacles per stage
+# (will carry on training on last stage when threshhold reached)
+
+- #0
+  goal_radius: 1.0
+  map_generator:
+    algorithm: "rosnav"
+    algorithm_config:
+      map_type: indoor # chose between 'indoor' and 'outdoor'
+
+      # indoor parameters
+      indoor:
+        corridor_radius: 5 # total corridor diameter = 1+2*corridor_radius
+        iterations: 60 # number of nodes for the indoor map algorithm
+  static: 10
+  dynamic: 0
+- #1
+  goal_radius: 0.75
+  map_generator:
+    algorithm: "rosnav"
+    algorithm_config:
+      map_type: indoor # chose between 'indoor' and 'outdoor'
+
+      # indoor parameters
+      indoor:
+        corridor_radius: 4 # total corridor diameter = 1+2*corridor_radius
+        iterations: 50
+  static: 10
+  dynamic: 10
+- #2
+  goal_radius: 0.5
+  map_generator:
+    algorithm: "rosnav"
+    algorithm_config:
+      map_type: indoor # chose between 'indoor' and 'outdoor'
+
+      # indoor parameters
+      indoor:
+        corridor_radius: 3 # total corridor diameter = 1+2*corridor_radius
+        iterations: 40
+  static: 10
+  dynamic: 15
+- #3
+  goal_radius: 0.3
+  map_generator:
+    algorithm: "rosnav"
+    algorithm_config:
+      map_type: indoor # chose between 'indoor' and 'outdoor'
+
+      # indoor parameters
+      indoor:
+        corridor_radius: 3 # total corridor diameter = 1+2*corridor_radius
+        iterations: 60
+
+  static: 10
+  dynamic: 25
