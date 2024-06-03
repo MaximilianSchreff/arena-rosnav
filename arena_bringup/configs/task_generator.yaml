@@ -19,8 +19,8 @@ RANDOM:
     max: 0
     models: ["shelf"]
   dynamic:
-    min: 20
-    max: 20
+    min: 0
+    max: 0
     models: ["actor1"]
 
 ZONES:
